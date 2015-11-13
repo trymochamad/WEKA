@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import weka.weka.DataStore;
+import weka.object.TriGram;
 
 /**
  *
@@ -18,28 +20,29 @@ import weka.weka.DataStore;
  */
 public class NaiveBayes {
   
-  private HashMap<List<String>, Integer> model = new HashMap<>();
-  private Set<String> classes = new HashSet<>();
+  private HashMap<TriGram, Integer> model = new HashMap<>();
+  private Map<String, Integer> classes = new HashMap<>();
     
   public void makeModel(DataStore ds) {    
     for ( int i = 0; i < ds.getElementSize(); i++ ) {
       for ( int j = 0; j < ds.getAttributeSize(i); j++ ) {
-        List<String> key = new ArrayList<>();
-        key.add(Integer.toString(j));
-        key.add(ds.getAttribute(i, j));
-        key.add(ds.getClass(i));
+        TriGram key = new TriGram(Integer.toString(j), ds.getAttribute(i, j), ds.getClass(i));
         
         if ( j == ds.getAttributeSize(i) - 1 ) {
-          classes.add(ds.getAttribute(i, j));
+          String theClass = ds.getClass(i);
+          classes.put(
+            theClass,
+            (!classes.containsKey(theClass)) ? 1 : (int)classes.get(theClass) + 1            
+          );
+        } else {        
+          model.put(
+            key,
+            (!model.containsKey(key)) ? 1 : (int)model.get(key) + 1
+          );
         }
-        
-        model.put(
-          key,
-          (model.get(key) == null) ? 1 : (int)model.get(key) + 1
-        );
         
       }
     }        
   }
-  
+    
 }
