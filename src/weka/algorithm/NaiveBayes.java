@@ -6,12 +6,10 @@
 package weka.algorithm;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import weka.weka.DataStore;
 
 /**
@@ -21,9 +19,9 @@ import weka.weka.DataStore;
 public class NaiveBayes {
   
   private HashMap<List<String>, Integer> model = new HashMap<>();
+  private Set<String> classes = new HashSet<>();
     
-  public void makeModel(DataStore ds) { 
-    
+  public void makeModel(DataStore ds) {    
     for ( int i = 0; i < ds.getElementSize(); i++ ) {
       for ( int j = 0; j < ds.getAttributeSize(i); j++ ) {
         List<String> key = new ArrayList<>();
@@ -31,12 +29,17 @@ public class NaiveBayes {
         key.add(ds.getAttribute(i, j));
         key.add(ds.getClass(i));
         
+        if ( j == ds.getAttributeSize(i) - 1 ) {
+          classes.add(ds.getAttribute(i, j));
+        }
+        
         model.put(
           key,
-          (model.get(key) == null) ? 1 : (int)model.get(key) + 1);
+          (model.get(key) == null) ? 1 : (int)model.get(key) + 1
+        );
+        
       }
     }        
-
   }
-    
+  
 }
