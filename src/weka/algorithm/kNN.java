@@ -15,6 +15,7 @@ import weka.data.DataStore;
  * @author KEVIN
  */
 public class kNN {
+
     private DataStore ds;   // training data
     private int similiarity[];
     private String similiarityclass[];
@@ -30,16 +31,16 @@ public class kNN {
         similiarity = new int[k];
         similiarityclass = new String[k];
         for (int i=0; i<k; i++){
-            similiarity[i] = 0;
+            similiarity[i] = -1;
             similiarityclass[i] = "";
         }
     }
     
     public void insertMin(int sesuatu, String sesuatukelas){
-        int min = 0;
+        int min = similiarity[0];
         int idxmin = 0;
         for (int i=0; i<k; i++) {
-            if (similiarity[i]<=min) {
+            if (similiarity[i]<=min && min!=-1) {
                 min = similiarity[i];
                 idxmin = i;
             }
@@ -58,8 +59,20 @@ public class kNN {
                 if (temp.get(j).equals(attributes.get(j)))
                     counter++;
             }
+            //System.out.println("Jumlah atribut yang sama = " + counter);
             insertMin(counter, ds.getClass(i));
         }
+
+    /*    // print isi similiarity dan similiarity class
+        for (int i=0; i<k; i++) {
+            System.out.print(similiarity[i] + " ");
+        }
+        System.out.println();
+        for (int i=0; i<k; i++) {
+            System.out.print(similiarityclass[i] + " ");
+        }
+        System.out.println();
+    */
 
         // return modus dari similiarity class
         Map<String, Integer> classes = new HashMap<>();
@@ -76,12 +89,17 @@ public class kNN {
                 maxEntry = entry;
         }
 
+        for (int i=0; i<k; i++) {
+            similiarity[i] = -1;
+            similiarityclass[i]="";
+        }
+
         return maxEntry.getKey();
     }
 
     public static void main(String args[]){
         DataStore dataStore = new DataStore("weka/algorithm/car.data.txt");
-        kNN knn = new kNN(3,dataStore);
+        kNN knn = new kNN(2,dataStore);
         DataStore testData = dataStore;
         int correct = 0;
         
