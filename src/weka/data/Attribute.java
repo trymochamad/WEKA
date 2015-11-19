@@ -50,5 +50,8 @@ public class Attribute {
   public String getName() {
     return name;
   }
+  public int getType() {
+    return type;
+  }
   
 }
