@@ -46,4 +46,9 @@ public class Attribute {
     this.type = type;
   }
   
+  /* Getter */
+  public String getName() {
+    return name;
+  }
+  
 }

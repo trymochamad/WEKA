@@ -86,11 +86,26 @@ public class Main {
             k = sc.nextInt();
         return k;
     }
+    
+    private static int getClassIndex(DataStore dataStore) {
+        int k = -1;
+        int i = 0;
+        for ( Attribute attribute: dataStore.getArffAttributes() ) {
+          System.out.println(i + ". " + attribute.getName());
+          ++i;
+        }
+        System.out.print("Pilih kelas atribut: ");
+        if (sc.hasNextInt())
+            k = sc.nextInt();
+        return k;      
+    }
 
     private static void doAlgorithm(int algorithm, int scheme, String fileName, int knn, int kfold) {
         Algorithm algo = null;
         DataStore dataStore = new DataStore();
         dataStore.readArff(fileName);
+        dataStore.setClassIndex(getClassIndex(dataStore));
+        dataStore.read();
         // full training
         if (scheme == 1) {            
             switch (algorithm) {

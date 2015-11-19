@@ -14,18 +14,21 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author visat
  */
 public class DataStore {
-    private int classIndex = 0;
+    private int classIndex = -1;
   
     private List<List<String>> attributeList = new ArrayList<>();
     private List<String> classList = new ArrayList<>();
     private Set<Integer> testDataIndices = new HashSet<>();
 
+    private List<String> data = new ArrayList<>();
     private List<Attribute> attributes = new ArrayList<>();
     
     public DataStore() {
@@ -33,7 +36,7 @@ public class DataStore {
     }
 
     public DataStore(String fileName) {
-        read(fileName);
+        readArff(fileName);
     }
 
     public void add(List<String> attributes, String _class) {
@@ -82,7 +85,7 @@ public class DataStore {
 
               break;
             case Attribute.ARFF_DATA:              
-              reader(fileReader, bufferedReader, line);
+              saveData(fileReader, bufferedReader, line);
               break;
             default:
               break;                
@@ -97,15 +100,13 @@ public class DataStore {
       }
       
     }
-
-    public void read(String fileName) {
-      clear();
+    
+    public void saveData(FileReader fileReader, BufferedReader bufferedReader, String line) {
       try {
-        FileReader fileReader = new FileReader(fileName);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-        String line = new String();
-        
-        reader(fileReader, bufferedReader, line);
+        while ((line = bufferedReader.readLine()) != null) {
+          data.add(line);
+        } 
+        classIndex = (Arrays.asList(data.get(0).trim().split("[,]"))).size() - 1;
       }
       catch (Exception e) {
           clear();
@@ -113,28 +114,26 @@ public class DataStore {
       }
     }
     
-    public void reader(FileReader fileReader, BufferedReader bufferedReader, String line) {
-      try {
-        while ((line = bufferedReader.readLine()) != null) {
-            List<String> list = Arrays.asList(line.trim().split("[,]"));
-            if (list.size() <= 1 || (!attributeList.isEmpty() && list.size()-1 != attributeList.get(0).size()))
-                throw new Exception("Error: wrong file input format");
-            else if (list.isEmpty())
-                continue;
-            List<String> attributes = new ArrayList<>();
-            for (int i = 0; i < list.size(); ++i) {
-                String s = list.get(i).trim();
-                if (i == list.size()-1)
-                    classList.add(s);
-                else
-                    attributes.add(s);
-            }
-            attributeList.add(attributes);
-        } 
-      }
-      catch (Exception e) {
-          clear();
-          System.err.println(e.getMessage());
+    public void read() {     
+      for ( String line: data ) {
+        try {
+          List<String> list = Arrays.asList(line.trim().split("[,]"));
+          if (list.size() <= 1 || (!attributeList.isEmpty() && list.size()-1 != attributeList.get(0).size()))
+            throw new Exception("Error: wrong file input format");
+          else if (list.isEmpty())
+            continue;
+          List<String> attributes = new ArrayList<>();
+          for (int i = 0; i < list.size(); ++i) {
+            String s = list.get(i).trim();
+            if (i == classIndex)
+              classList.add(s);
+            else
+              attributes.add(s);
+          }
+          attributeList.add(attributes);
+        } catch (Exception ex) {
+          Logger.getLogger(DataStore.class.getName()).log(Level.SEVERE, null, ex);
+        }
       }
     }
 
@@ -193,5 +192,13 @@ public class DataStore {
         for (Integer i: testDataIndices)
             testData.add(attributeList.get(i), classList.get(i));
         return testData;
+    }
+    
+    public List<Attribute> getArffAttributes() {
+      return attributes;
+    }
+    
+    public void setClassIndex(int c) {
+      classIndex = c;
     }
 }
