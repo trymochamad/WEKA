@@ -18,7 +18,7 @@ import weka.object.TriGram;
  *
  * @author Asus
  */
-public class NaiveBayes {
+public class NaiveBayes implements Algorithm {
 
     private final Map<TriGram, Integer> model = new HashMap<>();
     private final Map<String, Integer> classes = new HashMap<>();
@@ -55,7 +55,12 @@ public class NaiveBayes {
                 BigInteger.valueOf(ds.getElementSize()).multiply(
                 BigInteger.valueOf(classEntry.getValue()).pow(ds.getAttributeSize())));
     }
+    @Override
+    public String getAlgorithmName() {
+        return "Naive Bayes";
+    }
 
+    @Override
     public String predict(List<String> attributes) {
         BigDecimal maxProbability = BigDecimal.ZERO;
         String prediction = null;
@@ -81,57 +86,5 @@ public class NaiveBayes {
             }
         }        
         return prediction;
-    }
-
-    public static void main(String[] args) {        
-        DataStore dataStore = new DataStore("src/weka/algorithm/weather.data.arff");
-        System.out.println("Naive Bayes algorithm");
-        
-        // full training
-        NaiveBayes naiveBayesFull = new NaiveBayes(dataStore);        
-        int correctFull = 0;
-        for (int i = 0; i < dataStore.getElementSize(); ++i) {
-            String prediction = naiveBayesFull.predict(dataStore.getAttributes(i));
-            if (dataStore.getClass(i).equals(prediction))
-                ++correctFull;
-        }
-        System.out.println("full training: " + correctFull + "/" + dataStore.getElementSize() + " correct");
-        
-        // 10-fold cross-validation
-        final int k = 10;
-        final int partitionSize = dataStore.getElementSize() >= k ? dataStore.getElementSize()/k : 1;        
-        NaiveBayes naiveBayesFold = new NaiveBayes();
-        int maxCorrectFold = Integer.MIN_VALUE;
-        for (int fold = 0; fold < k; ++fold) {
-            // get partition for training and test
-            DataStore partitionTest = new DataStore(), partitionTraining = new DataStore();
-            int l = fold * partitionSize,
-                r = l + partitionSize - 1;
-            for (int i = 0; i < dataStore.getElementSize(); ++i)
-                if (i >= l && i <= r)
-                    partitionTest.add(dataStore.getAttributes(i), dataStore.getClass(i));
-                else
-                    partitionTraining.add(dataStore.getAttributes(i), dataStore.getClass(i));
-            NaiveBayes naiveBayesTraining = new NaiveBayes(partitionTraining);            
-            
-            // validation
-            int correct = 0;
-            for (int i = 0; i < partitionTest.getElementSize(); ++i) {
-                if (partitionTest.getClass(i).equals(
-                naiveBayesTraining.predict(partitionTest.getAttributes(i))))
-                    ++correct;
-            }            
-            if (maxCorrectFold < correct) {
-                maxCorrectFold = correct;
-                naiveBayesFold = naiveBayesTraining;
-            }
-        }        
-        int correctFold = 0;
-        for (int i = 0; i < dataStore.getElementSize(); ++i) {
-            String prediction = naiveBayesFold.predict(dataStore.getAttributes(i));
-            if (dataStore.getClass(i).equals(prediction))
-                ++correctFold;
-        }
-        System.out.println(String.valueOf(k) + "-fold cross-validation: " + correctFold + "/" + dataStore.getElementSize() + " correct");
     }
 }
