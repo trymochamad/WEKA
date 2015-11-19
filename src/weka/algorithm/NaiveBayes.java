@@ -8,7 +8,6 @@ package weka.algorithm;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +20,9 @@ import weka.object.TriGram;
  */
 public class NaiveBayes {
 
-    private Map<TriGram, Integer> model = new HashMap<>();
-    private Map<String, Integer> classes = new HashMap<>();
-    private Map<String, BigInteger> classDenumerators = new HashMap<>();    
+    private final Map<TriGram, Integer> model = new HashMap<>();
+    private final Map<String, Integer> classes = new HashMap<>();
+    private final Map<String, BigInteger> classDenumerators = new HashMap<>();
 
     public NaiveBayes() {
 
@@ -36,7 +35,7 @@ public class NaiveBayes {
     public void makeModel(DataStore ds) {
         model.clear();
         classes.clear();
-        classDenumerators.clear();;        
+        classDenumerators.clear();
         for ( int i = 0; i < ds.getElementSize(); i++ ) {
             String theClass = ds.getClass(i);
             classes.put(
@@ -58,8 +57,8 @@ public class NaiveBayes {
     }
 
     public String predict(List<String> attributes) {
-        List<BigDecimal> probabilities = new ArrayList<>();
-        List<String> predictions = new ArrayList<>();
+        BigDecimal maxProbability = BigDecimal.ZERO;
+        String prediction = null;
         for (Map.Entry<String, Integer> classKey: classes.entrySet()) {
             BigInteger numerator = BigInteger.valueOf(classKey.getValue());
             BigInteger denumerator = classDenumerators.get(classKey.getKey());
@@ -76,17 +75,11 @@ public class NaiveBayes {
                     numerator = numerator.multiply(BigInteger.valueOf(val));
             }
             BigDecimal probability = new BigDecimal(numerator).divide(new BigDecimal(denumerator), MathContext.DECIMAL128);
-            probabilities.add(probability);
-            predictions.add(classKey.getKey());
-        }
-        BigDecimal maxProbability = BigDecimal.ZERO;
-        String prediction = null;
-        for (int i = 0; i < probabilities.size(); ++i) {
-            if (probabilities.get(i).compareTo(maxProbability) == 1) {
-                maxProbability = probabilities.get(i);
-                prediction = predictions.get(i);
+            if (probability.compareTo(maxProbability) >= 0) {
+                maxProbability = probability;
+                prediction = classKey.getKey();
             }
-        }
+        }        
         return prediction;
     }
 
