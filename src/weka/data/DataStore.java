@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -19,10 +20,14 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author visat
  */
 public class DataStore {
+    private int classIndex = 0;
+  
     private List<List<String>> attributeList = new ArrayList<>();
     private List<String> classList = new ArrayList<>();
     private Set<Integer> testDataIndices = new HashSet<>();
 
+    private List<Attribute> attributes = new ArrayList<>();
+    
     public DataStore() {
 
     }
@@ -44,34 +49,93 @@ public class DataStore {
         classList.clear();
         testDataIndices.clear();
     }
+    
+    public void readArff(String fileName) {
+      clear();
+      try {
+        
+        FileReader fileReader = new FileReader(fileName);
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        String line;
+        while ((line = bufferedReader.readLine()) != null) {
+        
+          line = line.replaceAll(",\\s+", ",");
+          List<String> header = Arrays.asList(line.trim().split("[ ]"));
+          String arff_header = header.get(0);
+
+          switch(arff_header) {
+            case Attribute.ARFF_RELATION:
+              /* Ignore HA HA */
+              break;
+            case Attribute.ARFF_ATTRIBUTE:
+              String arff_attr_name = header.get(1);
+
+              switch(header.get(2)) {
+                case Attribute.ARFF_ATTRIBUTE_NUMERIC:
+                  attributes.add(new Attribute(arff_attr_name, Attribute.NUMERIC));
+                  break;
+                default:
+                  /* Anggap Nominal */
+                  attributes.add(new Attribute(arff_attr_name, Attribute.NOMINAL, header.get(2)));
+                  break;
+              }
+
+              break;
+            case Attribute.ARFF_DATA:              
+              reader(fileReader, bufferedReader, line);
+              break;
+            default:
+              break;                
+          }
+          
+        }
+        
+      }
+      catch (Exception e) {
+          clear();
+          System.err.println(e.getMessage());
+      }
+      
+    }
 
     public void read(String fileName) {
-        clear();
-        try {
-            FileReader fileReader = new FileReader(fileName);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                List<String> list = Arrays.asList(line.trim().split("[,]"));
-                if (list.size() <= 1 || (!attributeList.isEmpty() && list.size()-1 != attributeList.get(0).size()))
-                    throw new Exception("Error: wrong file input format");
-                else if (list.isEmpty())
-                    continue;
-                List<String> attributes = new ArrayList<>();
-                for (int i = 0; i < list.size(); ++i) {
-                    String s = list.get(i).trim();
-                    if (i == list.size()-1)
-                        classList.add(s);
-                    else
-                        attributes.add(s);
-                }
-                attributeList.add(attributes);
+      clear();
+      try {
+        FileReader fileReader = new FileReader(fileName);
+        BufferedReader bufferedReader = new BufferedReader(fileReader);
+        String line = new String();
+        
+        reader(fileReader, bufferedReader, line);
+      }
+      catch (Exception e) {
+          clear();
+          System.err.println(e.getMessage());
+      }
+    }
+    
+    public void reader(FileReader fileReader, BufferedReader bufferedReader, String line) {
+      try {
+        while ((line = bufferedReader.readLine()) != null) {
+            List<String> list = Arrays.asList(line.trim().split("[,]"));
+            if (list.size() <= 1 || (!attributeList.isEmpty() && list.size()-1 != attributeList.get(0).size()))
+                throw new Exception("Error: wrong file input format");
+            else if (list.isEmpty())
+                continue;
+            List<String> attributes = new ArrayList<>();
+            for (int i = 0; i < list.size(); ++i) {
+                String s = list.get(i).trim();
+                if (i == list.size()-1)
+                    classList.add(s);
+                else
+                    attributes.add(s);
             }
-        }
-        catch (Exception e) {
-            clear();
-            System.err.println(e.getMessage());
-        }
+            attributeList.add(attributes);
+        } 
+      }
+      catch (Exception e) {
+          clear();
+          System.err.println(e.getMessage());
+      }
     }
 
     private void populateTestDataIndices() {

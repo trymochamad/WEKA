@@ -84,7 +84,7 @@ public class NaiveBayes {
     }
 
     public static void main(String[] args) {        
-        DataStore dataStore = new DataStore("src/weka/algorithm/car.data.txt");
+        DataStore dataStore = new DataStore("src/weka/algorithm/weather.data.arff");
         System.out.println("Naive Bayes algorithm");
         
         // full training
