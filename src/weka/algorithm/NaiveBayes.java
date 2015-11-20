@@ -5,12 +5,15 @@
  */
 package weka.algorithm;
 
+import static java.lang.String.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.MathContext;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import weka.data.Attribute;
 import weka.data.DataStore;
 import weka.object.TriGram;
 
@@ -55,6 +58,43 @@ public class NaiveBayes implements Algorithm {
                 BigInteger.valueOf(ds.getElementSize()).multiply(
                 BigInteger.valueOf(classEntry.getValue()).pow(ds.getAttributeSize())));
     }
+    
+    public void writeModel(DataStore ds) {
+      String formatting = "%-20s%s%n";
+      
+      List<String> classList = new ArrayList<>();
+      String initMsg = new String();
+      
+      for ( String value: ds.getArffAttributes().get(ds.getClassIndex()).getValues()) {
+        initMsg = initMsg + "\t" + value + "(" + classes.get(value) + "/" + ds.getElementSize() + ")";
+        classList.add(value);
+      }
+      
+      System.out.printf(formatting, "Attributes\t", initMsg);
+      
+      System.out.println("");
+      System.out.println("========================================================");
+      
+      int i = 0; int j = 0;
+      for ( Attribute attribute: ds.getArffAttributes() ) {
+        if ( i != ds.getClassIndex() ) {
+          System.out.println(attribute.getName());
+          for ( String value: attribute.getValues() ) {
+            String msg = new String();
+            for ( String theClass: classList ) {
+              Integer frequency = model.get(new TriGram(Integer.toString(j), value, theClass));
+              msg = msg + "\t \t" + ((frequency != null) ? frequency : "0") + "/" + classes.get(theClass);
+            }
+            System.out.printf(formatting, "   " + value + "     ", msg);
+          }
+          ++j;
+        }
+        ++i;
+      }
+      
+      System.out.println("");
+    }
+    
     @Override
     public String getAlgorithmName() {
         return "Naive Bayes";

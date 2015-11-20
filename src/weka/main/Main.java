@@ -97,6 +97,7 @@ public class Main {
         System.out.print("Pilih kelas atribut: ");
         if (sc.hasNextInt())
             k = sc.nextInt();
+        
         return k;      
     }
 
@@ -104,8 +105,9 @@ public class Main {
         Algorithm algo = null;
         DataStore dataStore = new DataStore();
         dataStore.readArff(fileName);
-        dataStore.setClassIndex(getClassIndex(dataStore));
+        dataStore.setClassIndex(getClassIndex(dataStore));        
         dataStore.read();
+        
         // full training
         if (scheme == 1) {            
             switch (algorithm) {
@@ -114,6 +116,10 @@ public class Main {
                     break;
                 case 2:
                     algo = new NaiveBayes(dataStore);
+                    
+                    /* Write Model */
+                    NaiveBayes nb = new NaiveBayes(dataStore);
+                    nb.writeModel(dataStore);
                     break;
                 default:
                     return;
@@ -124,7 +130,7 @@ public class Main {
                 if (dataStore.getClass(i).equals(prediction))
                     ++correctFull;
             }
-            System.out.println(algo.getAlgorithmName() + " full training: " + correctFull + "/" + dataStore.getElementSize() + " correct");
+            System.out.println(algo.getAlgorithmName() + " full training: " + correctFull + "/" + dataStore.getElementSize() + " correct (" + Double.toString((correctFull*100)/dataStore.getElementSize()) + "%)");
         }
         // k-fold cross-validation
         else if (scheme == 2) {
@@ -164,13 +170,20 @@ public class Main {
                     algoFold = algoTraining;
                 }
             }
+            
+            if (algorithm == 2) {    
+              /* Write Model for Naive Bayes*/
+              NaiveBayes nb = new NaiveBayes(dataStore);
+              nb.writeModel(dataStore);
+            }
+            
             int correctFold = 0;
             for (int i = 0; i < dataStore.getElementSize(); ++i) {
                 String prediction = algoFold.predict(dataStore.getAttributes(i));
                 if (dataStore.getClass(i).equals(prediction))
                     ++correctFold;
             }
-            System.out.println(algoFold.getAlgorithmName() + " " + String.valueOf(knn) + "-fold cross-validation: " + correctFold + "/" + dataStore.getElementSize() + " correct");
+            System.out.println(algoFold.getAlgorithmName() + " " + String.valueOf(knn) + "-fold cross-validation: " + correctFold + "/" + dataStore.getElementSize() + " correct (" + Double.toString((correctFold*100)/dataStore.getElementSize()) + "%)");
         }
     }
 }

@@ -201,4 +201,8 @@ public class DataStore {
     public void setClassIndex(int c) {
       classIndex = c;
     }
+    
+    public int getClassIndex() {
+      return classIndex;
+    }
 }
