@@ -5,6 +5,8 @@
  */
 package weka.main;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import weka.algorithm.*;
 import weka.data.*;
@@ -16,7 +18,7 @@ import weka.data.*;
 public class Main {
     private static final Scanner sc = new Scanner(System.in);
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         System.out.println("WEKA-WEKA");
         boolean keepRunning = true;
         boolean wrongChoice = false;
@@ -47,7 +49,7 @@ public class Main {
 
             doAlgorithm(idxAlgorithm, idxScheme, fileName, knn, 10);
         }
-    }
+    }*/
 
     private static int getAlgorithmIndex() {
         int idx = -1;
@@ -100,16 +102,30 @@ public class Main {
         
         return k;      
     }
+    
+    public static List<String> readFile(String fileName) {
+        List<String> attr = new ArrayList<>();
+      
+        DataStore dataStore = new DataStore();
+        dataStore.readArff(fileName);
+        
+        for ( Attribute attribute: dataStore.getArffAttributes() ) {
+          attr.add(attribute.getName());
+        }
+        
+        return attr;
+    }
 
-    private static void doAlgorithm(int algorithm, int scheme, String fileName, int knn, int kfold) {
+    public static void doAlgorithm(int algorithm, int scheme, String fileName, int knn, int kfold, int theClass) {
         Algorithm algo = null;
         DataStore dataStore = new DataStore();
         dataStore.readArff(fileName);
-        dataStore.setClassIndex(getClassIndex(dataStore));        
+        //dataStore.setClassIndex(getClassIndex(dataStore));  
+        dataStore.setClassIndex(theClass);
         dataStore.read();
-        
+                
         // full training
-        if (scheme == 1) {            
+        if (scheme == 1) {   
             switch (algorithm) {
                 case 1:
                     algo = new kNN(knn, dataStore);
@@ -183,7 +199,7 @@ public class Main {
                 if (dataStore.getClass(i).equals(prediction))
                     ++correctFold;
             }
-            System.out.println(algoFold.getAlgorithmName() + " " + String.valueOf(knn) + "-fold cross-validation: " + correctFold + "/" + dataStore.getElementSize() + " correct (" + Double.toString((correctFold*100)/dataStore.getElementSize()) + "%)");
+            System.out.println(algoFold.getAlgorithmName() + " " + String.valueOf(kfold) + "-fold cross-validation: " + correctFold + "/" + dataStore.getElementSize() + " correct (" + Double.toString((correctFold*100)/dataStore.getElementSize()) + "%)");
         }
     }
 }
