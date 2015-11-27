@@ -136,7 +136,7 @@ public class Main {
                     
                     /* Write Model */
                     NaiveBayes nb = new NaiveBayes(dataStore);
-                    nb.writeModel(dataStore);
+                    builder.append(nb.getModel(dataStore));
                     break;                
             }
             int correctFull = 0;
@@ -187,7 +187,7 @@ public class Main {
             if (algorithm == 2) {    
               /* Write Model for Naive Bayes*/
               NaiveBayes nb = new NaiveBayes(dataStore);
-              nb.writeModel(dataStore);
+              builder.append(nb.getModel(dataStore));
             }
             
             int correctFold = 0;

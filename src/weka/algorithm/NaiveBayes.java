@@ -59,8 +59,9 @@ public class NaiveBayes implements Algorithm {
                 BigInteger.valueOf(classEntry.getValue()).pow(ds.getAttributeSize())));
     }
     
-    public void writeModel(DataStore ds) {
+    public String getModel(DataStore ds) {
       String formatting = "%-20s%s%n";
+      StringBuilder builder = new StringBuilder();
       
       List<String> classList = new ArrayList<>();
       String initMsg = new String();
@@ -70,29 +71,30 @@ public class NaiveBayes implements Algorithm {
         classList.add(value);
       }
       
-      System.out.printf(formatting, "Attributes\t", initMsg);
+      builder.append(String.format(formatting, "Attributes\t", initMsg));
       
-      System.out.println("");
-      System.out.println("========================================================");
+      builder.append("\n");
+      builder.append("========================================================\n");
       
       int i = 0; int j = 0;
       for ( Attribute attribute: ds.getArffAttributes() ) {
         if ( i != ds.getClassIndex() ) {
-          System.out.println(attribute.getName());
+          builder.append(attribute.getName()+"\n");
           for ( String value: attribute.getValues() ) {
             String msg = new String();
             for ( String theClass: classList ) {
               Integer frequency = model.get(new TriGram(Integer.toString(j), value, theClass));
               msg = msg + "\t \t" + ((frequency != null) ? frequency : "0") + "/" + classes.get(theClass);
             }
-            System.out.printf(formatting, "   " + value + "     ", msg);
+            builder.append(String.format(formatting, "   " + value + "     ", msg));
           }
           ++j;
         }
         ++i;
       }
-      
-      System.out.println("");
+      builder.append("\n");
+
+      return builder.toString();
     }
     
     @Override

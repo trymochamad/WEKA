@@ -187,7 +187,7 @@ public class MainFrame extends javax.swing.JFrame {
                 comboClass.addItem(attr.getName());            
             if (ds.getElementSize() > 0)
                 spinnerAlgorithm.setModel(new SpinnerNumberModel(1, 1, ds.getElementSize(), 1));
-            comboClass.setSelectedIndex(0);
+            comboClass.setSelectedIndex(comboClass.getItemCount() - 1);
             buttonRun.setEnabled(true);
         }
     }//GEN-LAST:event_buttonFileNameActionPerformed
