@@ -89,7 +89,6 @@ public class NaiveBayes implements Algorithm {
       
       builder.append(String.format(formatting, "Attributes\t", initMsg));
       
-      builder.append("\n");
       builder.append("========================================================\n");
       
       int i = 0; int j = 0;
