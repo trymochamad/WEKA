@@ -16,6 +16,7 @@ import java.util.Map;
 import weka.data.Attribute;
 import weka.data.DataStore;
 import weka.object.TriGram;
+import weka.object.DiGram;
 
 /**
  *
@@ -24,6 +25,7 @@ import weka.object.TriGram;
 public class NaiveBayes implements Algorithm {
 
     private final Map<TriGram, Integer> model = new HashMap<>();
+    private final HashMap<DiGram, ArrayList<Integer>> nmodel = new HashMap<DiGram, ArrayList<Integer>>();
     private final Map<String, Integer> classes = new HashMap<>();
     private final Map<String, BigInteger> classDenumerators = new HashMap<>();
 
@@ -46,11 +48,25 @@ public class NaiveBayes implements Algorithm {
                 (!classes.containsKey(theClass)) ? 1 : (int)classes.get(theClass) + 1
             );
             for ( int j = 0; j < ds.getAttributeSize(); j++ ) {
-                TriGram key = new TriGram(Integer.toString(j), ds.getAttribute(i, j), theClass);
-                model.put(
-                    key,
-                    (!model.containsKey(key)) ? 1 : (int)model.get(key) + 1
-                );
+                // List<Attribute> attrs = ds.getArffAttributes();                 
+                // Attribute attr = attrs.get(j);
+                // if ( attr.getType() == attr.NOMINAL ) {
+                  TriGram key = new TriGram(Integer.toString(j), ds.getAttribute(i, j), theClass);
+                  model.put(
+                      key,
+                      (!model.containsKey(key)) ? 1 : (int)model.get(key) + 1
+                  );
+                /*} else if ( attr.getType() == attr.NUMERIC ) {
+                  DiGram nkey = new DiGram(Integer.toString(j), theClass);
+                  
+                  ArrayList<Integer> ltemp = nmodel.get(nkey);
+                  ltemp.add(Integer.parseInt(ds.getAttribute(i,j)));
+                  
+                  nmodel.put(
+                    nkey,
+                    ltemp
+                  );
+                }*/
             }
         }
         for (Map.Entry<String, Integer> classEntry: classes.entrySet())

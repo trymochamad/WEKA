@@ -6,16 +6,21 @@
 package weka.main;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import weka.algorithm.*;
 import weka.data.*;
+import weka.object.DiGram;
 
 /**
  *
  * @author visat
  */
 public class Main {
+    private static HashMap<DiGram, Integer> confusionMatrix = new HashMap<>();
+
     private static final Scanner sc = new Scanner(System.in);
 
     /*public static void main(String[] args) {
@@ -116,9 +121,10 @@ public class Main {
         return attr;
     }
 
-    public static String doAlgorithm(int algorithm, int scheme, String fileName, int knn, int kfold, int theClass) {
+    public static String doAlgorithm(int algorithm, int scheme, String fileName, int knn, int kfold, int theClass) {      
         StringBuilder builder = new StringBuilder();
         Algorithm algo = null;
+        confusionMatrix.clear();
         DataStore dataStore = new DataStore();
         dataStore.readArff(fileName);
         //dataStore.setClassIndex(getClassIndex(dataStore));  
@@ -142,6 +148,11 @@ public class Main {
             int correctFull = 0;
             for (int i = 0; i < dataStore.getElementSize(); ++i) {
                 String prediction = algo.predict(dataStore.getAttributes(i));
+                DiGram key = new DiGram(prediction, dataStore.getClass(i));
+                confusionMatrix.put(
+                  key,
+                  (!confusionMatrix.containsKey(key)) ? 1 : (int)confusionMatrix.get(key) + 1
+                );
                 if (dataStore.getClass(i).equals(prediction))
                     ++correctFull;
             }
@@ -193,11 +204,44 @@ public class Main {
             int correctFold = 0;
             for (int i = 0; i < dataStore.getElementSize(); ++i) {
                 String prediction = algoFold.predict(dataStore.getAttributes(i));
+                DiGram key = new DiGram(prediction, dataStore.getClass(i));
+                confusionMatrix.put(
+                  key,
+                  (!confusionMatrix.containsKey(key)) ? 1 : (int)confusionMatrix.get(key) + 1
+                );
                 if (dataStore.getClass(i).equals(prediction))
                     ++correctFold;
             }
             builder.append(algoFold.getAlgorithmName() + " " + String.valueOf(kfold) + "-fold cross-validation: " + correctFold + "/" + dataStore.getElementSize() + " correct (" + Double.toString((correctFold*100)/dataStore.getElementSize()) + "%)");
         }
+        builder.append(showConfusionMatrix(dataStore));
         return builder.toString();
+    }
+    
+    public static String showConfusionMatrix(DataStore ds) {
+      StringBuilder builder = new StringBuilder();
+      builder.append("\n");
+      builder.append("\n==== Confusion Matrix ====\n");
+           
+      List<String> listOfClass = (ds.getArffAttributes().get(ds.getClassIndex())).getValues();
+      
+      builder.append("\t(predicted)\t\n");
+      for ( String predictedClass: listOfClass) {
+        builder.append("\t" + predictedClass);
+      }
+      builder.append("\n");
+            
+      for ( String actualClass: listOfClass) {
+        builder.append(actualClass + "\t");
+        
+        for ( String predictedClass: listOfClass) {
+          DiGram key = new DiGram(predictedClass, actualClass);
+          builder.append( ((confusionMatrix.get(key) == null) ? 0 : confusionMatrix.get(key)) + "\t");
+        }
+        
+        builder.append("\n");
+      }
+      
+      return builder.toString();
     }
 }
