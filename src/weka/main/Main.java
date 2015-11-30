@@ -219,6 +219,22 @@ public class Main {
         return builder.toString();
     }
     
+    public static String predictClass(int algorithm, String fileName, int knn, int theClass, List<String> attributes) {
+        Algorithm algo = null;
+        confusionMatrix.clear();
+        DataStore dataStore = new DataStore();
+        dataStore.readArff(fileName);
+        dataStore.setClassIndex(theClass);
+        dataStore.read();
+                
+        if (algorithm == 1)
+            algo = new kNN(knn, dataStore);
+        else
+            algo = new NaiveBayes(dataStore);
+        String prediction = "Class prediction: " + algo.predict(attributes);
+        return prediction;
+    }
+    
     public static String showConfusionMatrix(DataStore ds) {
       StringBuilder builder = new StringBuilder();
       builder.append("\n");
