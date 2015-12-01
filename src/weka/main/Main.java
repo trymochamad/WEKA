@@ -121,7 +121,7 @@ public class Main {
         
         return attr;
     }
-
+    
     public static String doAlgorithm(int algorithm, int scheme, String fileName, int knn, int kfold, int theClass) {      
         StringBuilder builder = new StringBuilder();
         Algorithm algo = null;

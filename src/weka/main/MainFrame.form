@@ -72,7 +72,6 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Component id="labelFileName" min="-2" max="-2" attributes="0"/>
-                                  <Component id="buttonRun" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
                                   <Component id="labelTraining" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="labelClass" alignment="0" min="-2" max="-2" attributes="0"/>
                                   <Component id="labelAlgorithm" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -89,6 +88,12 @@
                                   <Component id="spinnerAlgorithm" max="32767" attributes="0"/>
                                   <Component id="spinnerTraining" min="-2" max="-2" attributes="0"/>
                               </Group>
+                          </Group>
+                          <Group type="102" attributes="0">
+                              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                              <Component id="buttonRun" min="-2" pref="132" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="258" max="-2" attributes="0"/>
+                              <Component id="saveToFile" min="-2" pref="126" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
@@ -123,11 +128,14 @@
                       <Component id="labelClass" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" max="-2" attributes="0"/>
                       <Component id="comboClass" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
-                      <Component id="buttonRun" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="buttonRun" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="saveToFile" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
                       <Component id="paneResult" min="-2" pref="190" max="-2" attributes="0"/>
-                      <EmptySpace pref="0" max="32767" attributes="0"/>
+                      <EmptySpace pref="17" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -135,7 +143,8 @@
           <SubComponents>
             <Component class="javax.swing.JButton" name="buttonRun">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Run"/>
+                <Property name="text" type="java.lang.String" value="Run Classifier"/>
+                <Property name="toolTipText" type="java.lang.String" value=""/>
                 <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
@@ -243,6 +252,15 @@
                   <SpinnerModel initial="10" maximum="100" minimum="1" numberType="java.lang.Integer" stepSize="1" type="number"/>
                 </Property>
               </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="saveToFile">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Save Model to File"/>
+                <Property name="enabled" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveToFileActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
