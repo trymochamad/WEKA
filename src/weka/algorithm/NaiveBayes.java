@@ -47,26 +47,30 @@ public class NaiveBayes implements Algorithm {
                 theClass,
                 (!classes.containsKey(theClass)) ? 1 : (int)classes.get(theClass) + 1
             );
-            for ( int j = 0; j < ds.getAttributeSize(); j++ ) {
-                // List<Attribute> attrs = ds.getArffAttributes();                 
-                // Attribute attr = attrs.get(j);
-                // if ( attr.getType() == attr.NOMINAL ) {
+            for ( int j = 0; j < ds.getArffAttributes().size()-1; j++ ) {
+                 List<Attribute> attrs = ds.getArffAttributes();                 
+                 Attribute attr = attrs.get(j);
+                 if ( attr.getType() == attr.NOMINAL ) {
+                  System.out.println("fery ambis" + ds.getAttribute(i,j));
                   TriGram key = new TriGram(Integer.toString(j), ds.getAttribute(i, j), theClass);
                   model.put(
                       key,
                       (!model.containsKey(key)) ? 1 : (int)model.get(key) + 1
                   );
-                /*} else if ( attr.getType() == attr.NUMERIC ) {
+                 }
+                  else if ( attr.getType() == attr.NUMERIC ) {
                   DiGram nkey = new DiGram(Integer.toString(j), theClass);
-                  
-                  ArrayList<Integer> ltemp = nmodel.get(nkey);
+                  System.out.println(nmodel.get(nkey));
+                  ArrayList<Integer> ltemp = new ArrayList<Integer>();
+                 
                   ltemp.add(Integer.parseInt(ds.getAttribute(i,j)));
                   
                   nmodel.put(
                     nkey,
                     ltemp
                   );
-                }*/
+                
+              }
             }
         }
         for (Map.Entry<String, Integer> classEntry: classes.entrySet())
@@ -93,8 +97,10 @@ public class NaiveBayes implements Algorithm {
       
       int i = 0; int j = 0;
       for ( Attribute attribute: ds.getArffAttributes() ) {
-        if ( i != ds.getClassIndex() ) {
+        while(j < ds.getArffAttributes().size()-1){
+          if ( i != ds.getClassIndex()) {
           builder.append(attribute.getName()+"\n");
+            System.out.println("lol" + attribute.getValues());
           for ( String value: attribute.getValues() ) {
             String msg = new String();
             for ( String theClass: classList ) {
@@ -104,6 +110,7 @@ public class NaiveBayes implements Algorithm {
             builder.append(String.format(formatting, "   " + value + "     ", msg));
           }
           ++j;
+        }
         }
         ++i;
       }
