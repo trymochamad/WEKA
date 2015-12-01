@@ -142,7 +142,7 @@ public class MainFrame extends javax.swing.JFrame {
       }
     });
 
-    spinnerTraining.setModel(new javax.swing.SpinnerNumberModel(10, 1, 100, 1));
+    spinnerTraining.setModel(new javax.swing.SpinnerNumberModel(10, 2, 100, 1));
 
     saveToFile.setText("Save Model to File");
     saveToFile.setEnabled(false);
